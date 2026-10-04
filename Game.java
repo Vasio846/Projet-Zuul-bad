@@ -1,4 +1,3 @@
- 
 /**
  * Classe Game - le moteur du jeu d'aventure Zuul.
  *
@@ -17,17 +16,36 @@ public class Game
     
     private void createRooms()
     {
+        // 1st floor
         Room vHall = new Room("in the main hall");
         Room vDiningRoom = new Room("in the dining room");
         Room vKitchen = new Room("in the kitchen");
         Room vLivingRoom = new Room("in the living room");
         Room vOffice = new Room("in the office");
         
-        vHall.setExits(null, vDiningRoom, null, vLivingRoom);
-        vDiningRoom.setExits(vKitchen, null, null, vHall);
-        vKitchen.setExits(null, null, vDiningRoom, null);
-        vLivingRoom.setExits(vOffice, vHall, null, null);
-        vOffice.setExits(null, vKitchen, vLivingRoom, null);
+        // 2nd floor
+        Room vHall2 = new Room("above the main hall");
+        Room vBedroom = new Room("in the bedroom");
+        
+        vHall.setExit("east", vDiningRoom);
+        vHall.setExit("west", vLivingRoom);
+        vHall.setExit("stairs", vHall2);
+        
+        vDiningRoom.setExit("north", vKitchen);
+        vDiningRoom.setExit("west", vHall);
+        
+        vKitchen.setExit("south", vDiningRoom);
+        
+        vLivingRoom.setExit("north", vOffice);
+        vLivingRoom.setExit("east", vHall);
+        
+        vOffice.setExit("east", vKitchen);
+        vOffice.setExit("south", vLivingRoom);
+        
+        vHall2.setExit("north", vBedroom);
+        vHall2.setExit("stairs", vHall);
+        
+        vBedroom.setExit("south", vHall2);
         
         this.aCurrentRoom = vHall;
     }// createRooms()
@@ -39,70 +57,48 @@ public class Game
             return;
         }
         
-        Room vNextRoom = null;
         String vDirection = pDirection.getSecondWord();
+        Room vNextRoom = this.aCurrentRoom.getExit(vDirection);
         
-        if(vDirection.equals("north")){
-            vNextRoom = this.aCurrentRoom.aNorthExit;
-        }// if
-        else{
-            if(vDirection.equals("east")){
-            vNextRoom = this.aCurrentRoom.aEastExit;
-            }// if
-            else{
-                if(vDirection.equals("south")){
-                    vNextRoom = this.aCurrentRoom.aSouthExit;
-                }// if
-                else{
-                    if(vDirection.equals("west")){
-                        vNextRoom = this.aCurrentRoom.aWestExit;
-                    }// if
-                    else{
-                        System.out.println("Unknown direction");
-                        return;
-                    }// else
-                }// else
-            }// else
-        }// else
-        
+        // Testing if the second word is a valid direction :
         if(vNextRoom == null){
-            System.out.println("There is no door !");
+            System.out.println("Invalid direction.");
             return;
-        }// if
+        }
         
         this.aCurrentRoom = vNextRoom;
-        System.out.println(this.aCurrentRoom.getDescription());
-        
-        System.out.print("Exits : ");
-        if (this.aCurrentRoom.aNorthExit != null){
-            System.out.print("north ");
-        }// if
-        if (this.aCurrentRoom.aEastExit != null){
-            System.out.print("east ");
-        }// if
-        if (this.aCurrentRoom.aSouthExit != null){
-            System.out.print("south ");
-        }// if
-        if (this.aCurrentRoom.aWestExit != null){
-            System.out.print("west ");
-        }// if
-        
+        this.printLocationInfo();
     }// goRoom(.)
+    
+    private void printLocationInfo()
+    {
+        System.out.println("You are " + this.aCurrentRoom.getDescription());
+        System.out.println();
+        System.out.print("Exits : ");
+        System.out.print(Room.getExitString(this.aCurrentRoom));
+        System.out.println();
+    }// printLocationInfo()
     
     private void printWelcome()
     {
+        System.out.println();
         System.out.println("Welcome to the World of Zuul!");
         System.out.println("World of Zuul is a new, incredibly boring adventure game.");
         System.out.println("Type 'help' if you need help.");
+        System.out.println();
+        
+        this.printLocationInfo();
     }// printWelcome()
     
     private void printHelp()
     {
+        System.out.println("");
         System.out.println("You are lost. You are alone.");
         System.out.println("You wander around at the university.");
         System.out.println("");
         System.out.println("Your command words are: ");
         System.out.println("  go quit help");
+        System.out.println("");
     }// printHelp()
     
     private boolean quit(final Command pCommand)
@@ -126,9 +122,11 @@ public class Game
             return quit(pCommand);
         }
         if(pCommand.getCommandWord().equals("go")){
+            this.goRoom(pCommand);
             return false;
         }
         if(pCommand.getCommandWord().equals("help")){
+            this.printHelp();
             return false;
         }
         
@@ -147,6 +145,8 @@ public class Game
             vFinished = processCommand(vCommand);
         }// while
         
+        System.out.println("");
         System.out.println("Thank you for playing. Good bye.");
+        System.out.println("");
     }// play()
 }// Game                

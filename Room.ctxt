@@ -3,8 +3,14 @@ comment0.target=Room
 comment0.text=\r\n\ Classe\ Room\ -\ un\ lieu\ du\ jeu\ d'aventure\ Zuul.\r\n\r\n\ @author\ votre\ nom\r\n
 comment1.params=pDescription
 comment1.target=Room(java.lang.String)
+comment1.text=\r\n\ Create\ a\ room\r\n\ pDescription\ \=\ text\ deescribing\ the\ room\r\n
 comment2.params=
 comment2.target=java.lang.String\ getDescription()
-comment3.params=pNorthExit\ pEastExit\ pSouthExit\ pWestExit
-comment3.target=void\ setExits(v1.Room,\ v1.Room,\ v1.Room,\ v1.Room)
-numComments=4
+comment3.params=pDirection\ pNeighbor
+comment3.target=void\ setExit(java.lang.String,\ Room)
+comment3.text=\r\n\ Define\ an\ exit\ for\ the\ room.\r\n
+comment4.params=pDirection
+comment4.target=Room\ getExit(java.lang.String)
+comment5.params=pRoom
+comment5.target=java.lang.String\ getExitString(Room)
+numComments=6
