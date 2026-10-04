@@ -31,11 +31,12 @@ public class CommandWords
     /**
      * Print all valid commands to System.out.
      */
-    public void showAll()
+    public String getCommandList()
     {
+        String vList = " ";
         for(String vCommand : aValidCommands){
-            System.out.print(vCommand + " ");
+            vList += vCommand + " ";
         }
-        System.out.println();
+        return vList;
     }// showAll()
 } // CommandWords

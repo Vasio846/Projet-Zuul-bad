@@ -51,6 +51,8 @@ public class Game
         
         vBedroom.setExit("south", vHall2);
         
+        vCellar.setExit("up", vKitchen);
+        
         this.aCurrentRoom = vHall;
     }// createRooms()
     
@@ -58,6 +60,7 @@ public class Game
     {
         if(pDirection.hasSecondWord() == false){
             System.out.println("Go where ?");
+            System.out.println();
             return;
         }
         
@@ -99,7 +102,7 @@ public class Game
         System.out.println("You wander around at the manor.");
         System.out.println("");
         System.out.println("Your command words are: ");
-        aParser.showCommands();
+        System.out.println(aParser.getCommands()); // utilise Parser pour print qqchose dépendant de CommandWords
         System.out.println("");
     }// printHelp()
     
