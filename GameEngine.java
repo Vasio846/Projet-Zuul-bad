@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.Stack;
 
 /**
  * Game engine
@@ -7,6 +8,7 @@ public class GameEngine
 {
     private Parser                aParser;
     private Room                  aCurrentRoom;
+    private Stack<Room>           aPreviousRooms; // stocke la liste des pièces qu'on a visité
     private HashMap<String, Room> aRoomList;
     private UserInterface         aGui;
 
@@ -15,8 +17,9 @@ public class GameEngine
      */
     public GameEngine()
     {
-        this.aParser = new Parser();
-        this.aRoomList = new HashMap<String, Room>();
+        this.aParser        = new Parser();
+        this.aRoomList      = new HashMap<String, Room>();
+        this.aPreviousRooms = new Stack<Room>();
         this.createRooms();
     }
     
@@ -29,18 +32,18 @@ public class GameEngine
     private void createRooms()
     {
         // 1st floor
-        Room vHall = new Room("in the main hall", "Hall.jpg");
-        Room vDiningRoom = new Room("in the dining room", "diningRoom.jpg");
-        Room vKitchen = new Room("in the kitchen", "Kitchen.jpg");
-        Room vLivingRoom = new Room("in the living room", "blank.jpg");
-        Room vOffice = new Room("in the office", "blank.jpg");
+        Room vHall = new Room("in the main hall", "Images/Hall.jpg");
+        Room vDiningRoom = new Room("in the dining room", "Images/DiningRoom.jpg");
+        Room vKitchen = new Room("in the kitchen", "Images/Kitchen.jpeg");
+        Room vLivingRoom = new Room("in the living room", "Images/LivingRoom.jpg");
+        Room vOffice = new Room("in the office", "Images/Office.jpg");
         
         // 2nd floor  
-        Room vHall2 = new Room("above the main hall", "blank.jpg");
-        Room vBedroom = new Room("in the bedroom", "blank.jpg");
+        Room vHall2 = new Room("above the main hall", "Images/Hall2.jpg");
+        Room vBedroom = new Room("in the bedroom", "Images/Bedroom.jpg");
         
         // basement 
-        Room vCellar = new Room("in the cellar", "blank.jpg");
+        Room vCellar = new Room("in the cellar", "Images/blank.jpg");
         
         // setting exits
         vHall.setExit("east", vDiningRoom);
@@ -51,12 +54,12 @@ public class GameEngine
         vDiningRoom.setExit("west", vHall);
         
         vKitchen.setExit("south", vDiningRoom);
-        vKitchen.setExit("trapdoor", vCellar);
+        vKitchen.setExit("trapdoor", vCellar); // will be hidden
         
         vLivingRoom.setExit("north", vOffice);
         vLivingRoom.setExit("east", vHall);
         
-        vOffice.setExit("east", vKitchen);
+        vOffice.setExit("east", vKitchen); // one way exit
         vOffice.setExit("south", vLivingRoom);
         
         vHall2.setExit("north", vBedroom);
@@ -67,7 +70,8 @@ public class GameEngine
         vCellar.setExit("up", vKitchen);
         
         // setting items
-        vHall.setItem("vase", 13);
+        vHall.addItem("vase", "an ancient vase", 13);
+        vHall.addItem("chair", "a wooden chair", 25);
         
         // creating room Hashmap
         this.aRoomList.put("Hall", vHall);
@@ -111,6 +115,14 @@ public class GameEngine
             this.aGui.println("You are not hungry anymore. ");
             this.aGui.print("\n");
         }
+        else if ( vCommandWord.equals( "back" ) ) {
+            this.back();
+        }
+        else if ( vCommandWord.equals( "map" ) ) {
+            this.aGui.print("\n");
+            this.aGui.println("You don't have a map. ");
+            this.aGui.print("\n");
+        }     
         else if ( vCommandWord.equals( "quit" ) ) {
             if ( vCommand.hasSecondWord() )
                 this.aGui.println( "Quit what?" );
@@ -128,6 +140,9 @@ public class GameEngine
         this.aGui.print("\n");
         
         this.printLocationInfo();
+        
+        if ( this.aCurrentRoom.getImageName() != null ) 
+            this.aGui.showImage( this.aCurrentRoom.getImageName() );
     }// printWelcome()
     
         private void printLocationInfo()
@@ -151,8 +166,7 @@ public class GameEngine
     private void goRoom(final Command pDirection)
     {
         if(pDirection.hasSecondWord() == false){
-            this.aGui.println("Go where ?");
-            this.aGui.print("\n");
+            this.aGui.println("Go where ?" + "\n");
             return;
         }
         
@@ -166,9 +180,25 @@ public class GameEngine
             return;
         }
         
+        this.aPreviousRooms.push(this.aCurrentRoom);
         this.aCurrentRoom = vNextRoom;
         this.printLocationInfo();
+        if ( this.aCurrentRoom.getImageName() != null )
+            this.aGui.showImage( this.aCurrentRoom.getImageName() );
     }// goRoom(.)
+    
+    private void back()
+    {
+        if(this.aPreviousRooms.empty()) {
+            this.aGui.println("You can't go back." + "\n");
+            return;
+        }
+        
+        this.aCurrentRoom = this.aPreviousRooms.pop();
+        this.printLocationInfo();
+        if ( this.aCurrentRoom.getImageName() != null ) 
+            this.aGui.showImage( this.aCurrentRoom.getImageName() );
+    }
     
     private void look(final Command pAction)
     {   
@@ -178,8 +208,8 @@ public class GameEngine
         }
         
         String vAction = pAction.getSecondWord();
-        if (vAction.equals( "item" )) {
-            this.aGui.println( this.aCurrentRoom.getItemDescription() );
+        if (vAction.equals("item") || vAction.equals( "items" )) {
+            this.aGui.println( this.aCurrentRoom.getItemsDescription() );
             this.aGui.println("\n");
             return;
         }

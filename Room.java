@@ -12,7 +12,7 @@ public class Room
     private String aDescription;
     private HashMap<String, Room> exits;
     private String aImageName;
-    private Item aItem;
+    private HashMap<String,Item> aItems;
     
     /**
      * Create a room
@@ -23,7 +23,7 @@ public class Room
         this.aDescription = pDescription;
         this.exits = new HashMap<String, Room>();
         this.aImageName = pImage;
-        this.aItem = null;
+        this.aItems = new HashMap<String, Item>();
     }// Room(.)
     
     public String getDescription()
@@ -33,23 +33,29 @@ public class Room
     
     public String getLongDescription()
     {
-        StringBuilder vLongDescription = new StringBuilder("You are ");
+        StringBuilder vLongDescription = new StringBuilder("You are : ");
+        vLongDescription.append(this.aDescription);
         vLongDescription.append(".\n" + this.getExitString() );
         vLongDescription.append(".\n" + this.getItemString() );
         return vLongDescription.toString();
     }// getLongDescription()
-    
-    public String getItemDescription()
+
+    public String getItemsDescription()
     {
-        if (this.aItem == null) {
-            return "There is no item to look at.";
+        if ( this.aItems.isEmpty() ) {
+            return "No item here.";
         }
-        return this.aItem.getLongDescription();
+        
+        StringBuilder vItems = new StringBuilder("Items : \n");
+        for (String vItem: this.aItems.keySet()) {
+            vItems.append( aItems.get(vItem).getLongDescription() + "\n" );
+        }
+        return vItems.toString();
     }
     
-    public void setItem(final String pDescription, final int pWeight)
+    public void addItem(final String pNom, final String pDescription, final int pWeight)
     {
-        this.aItem = new Item(pDescription, pWeight);
+        this.aItems.put(pNom, new Item(pNom, pDescription, pWeight));
     }
     
     /**
@@ -69,26 +75,32 @@ public class Room
     {
         StringBuilder vExits = new StringBuilder("Exits : ");
         for (String vDir: this.exits.keySet()) {
-            vExits.append(vDir + " ");
+            vExits.append(vDir + "  ");
         }
         return vExits.toString();
     }// getExitString(.)
     
-    public Item getItem()
+    public Item getItem(final String pItemName)
     {
-        return this.aItem;
+        return this.aItems.get(pItemName);
     }
     
+    /**
+     * returns String containing list of Item objects in the current Room
+     * if there is no items : returns "No item here."
+     */
     public String getItemString()
     {
-        if (this.aItem == null) {
+        if ( this.aItems.isEmpty() ) {
             return "No item here.";
         }
         
-        StringBuilder vExits = new StringBuilder("Items : ");
-        vExits.append(this.aItem.getDescription());
+        StringBuilder vItems = new StringBuilder("Items : ");
+        for (String vItem : this.aItems.keySet()) {
+            vItems.append(vItem + "  ");
+        }
 
-        return vExits.toString();
+        return vItems.toString();
     }// getExitString(.)
     
     /**

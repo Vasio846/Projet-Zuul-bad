@@ -1,8 +1,8 @@
 #BlueJ class context
 comment0.target=Item
 comment0.text=\r\n\ Item\ class\r\n
-comment1.params=pDescription\ pWeight
-comment1.target=Item(java.lang.String,\ int)
+comment1.params=pName\ pDescription\ pWeight
+comment1.target=Item(java.lang.String,\ java.lang.String,\ int)
 comment1.text=\r\n\ Constructeur\ d'objets\ de\ classe\ Item\r\n
 comment2.params=
 comment2.target=java.lang.String\ getDescription()

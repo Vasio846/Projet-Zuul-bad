@@ -13,7 +13,7 @@ import java.lang.StringBuilder;
 public class CommandWords
 {
     // a constant array that will hold all valid command words
-    private static final String[] aValidCommands = {"go", "quit", "help", "look", "eat"};
+    private static final String[] aValidCommands = {"go", "quit", "help", "look", "map", "eat", "back"};
     
     /**
      * Check whether a given String is a valid command word. 
