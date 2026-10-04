@@ -3,7 +3,7 @@ comment0.target=Room
 comment0.text=\r\n\ Classe\ Room\ -\ un\ lieu\ du\ jeu\ d'aventure\ Zuul.\r\n\r\n\ @author\ votre\ nom\r\n
 comment1.params=pDescription\ pImage
 comment1.target=Room(java.lang.String,\ java.lang.String)
-comment1.text=\r\n\ Create\ a\ room\r\n\ pDescription\ \=\ text\ deescribing\ the\ room\r\n
+comment1.text=\r\n\ Create\ a\ room\r\n\ pDescription\ \=\ text\ deescribing\ the\ room\r\n\ \r\n\ @param\ pDescription\ String\ describing\ the\ room\r\n\ @param\ pImage\ String\ containing\ path\ to\ image\r\n
 comment10.params=
 comment10.target=java.lang.String\ getItemString()
 comment10.text=\r\n\ returns\ String\ containing\ list\ of\ Item\ objects\ in\ the\ current\ Room\r\n\ if\ there\ is\ no\ items\ \:\ returns\ "No\ item\ here."\r\n
@@ -18,6 +18,7 @@ comment4.params=
 comment4.target=java.lang.String\ getItemsDescription()
 comment5.params=pNom\ pDescription\ pWeight
 comment5.target=void\ addItem(java.lang.String,\ java.lang.String,\ int)
+comment5.text=\r\n\ @param\ pNom\ item\ name\r\n\ @param\ pDescription\ item\ description\r\n\ @param\ pWeight\ int\ representing\ the\ item's\ weight\r\n
 comment6.params=pDirection\ pNeighbor
 comment6.target=void\ setExit(java.lang.String,\ Room)
 comment6.text=\r\n\ Define\ an\ exit\ for\ the\ room.\r\n

@@ -1,0 +1,6 @@
+go east
+go north
+eat
+back
+back
+go west

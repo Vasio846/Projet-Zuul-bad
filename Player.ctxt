@@ -1,0 +1,23 @@
+#BlueJ class context
+comment0.target=Player
+comment0.text=\r\n\ D\u00E9crivez\ votre\ classe\ Player\ ici.\r\n\r\n\ @author\ (votre\ nom)\r\n\ @version\ (un\ num\u00E9ro\ de\ version\ ou\ une\ date)\r\n
+comment1.params=
+comment1.target=Player()
+comment1.text=\r\n\ Constructeur\ d'objets\ de\ classe\ Player\r\n
+comment2.params=pRoom
+comment2.target=void\ setCurrentRoom(Room)
+comment2.text=\r\n\ @param\ pRoom\ Room\ to\ set\r\n
+comment3.params=
+comment3.target=Room\ getCurrentRoom()
+comment4.params=pDirection
+comment4.target=void\ goNextRoom(Command)
+comment4.text=\r\n\ @param\ pDirection\ direction\ of\ next\ Room\ \r\n
+comment5.params=
+comment5.target=boolean\ noPreviousRoom()
+comment6.params=
+comment6.target=Room\ popPreviousRoom()
+comment7.params=pItem
+comment7.target=void\ pickUpItem(Item)
+comment8.params=pItem
+comment8.target=void\ dropItem(Item)
+numComments=9

@@ -17,6 +17,9 @@ public class Room
     /**
      * Create a room
      * pDescription = text deescribing the room
+     * 
+     * @param pDescription String describing the room
+     * @param pImage String containing path to image
      */
     public Room(final String pDescription, final String pImage)
     {
@@ -25,6 +28,8 @@ public class Room
         this.aImageName = pImage;
         this.aItems = new HashMap<String, Item>();
     }// Room(.)
+    
+    // ***** DESCRIPTION ********
     
     public String getDescription()
     {
@@ -53,6 +58,13 @@ public class Room
         return vItems.toString();
     }
     
+    // ****** MODIFICATIONS *********
+    
+    /**
+     * @param pNom item name
+     * @param pDescription item description
+     * @param pWeight int representing the item's weight
+     */
     public void addItem(final String pNom, final String pDescription, final int pWeight)
     {
         this.aItems.put(pNom, new Item(pNom, pDescription, pWeight));
@@ -60,11 +72,13 @@ public class Room
     
     /**
      * Define an exit for the room.
-     */
+     */ 
     public void setExit(final String pDirection, final Room pNeighbor)
     {
         this.exits.put(pDirection, pNeighbor);
     }// setExit(..)
+    
+    // ******** GET *************
     
     public Room getExit(final String pDirection)
     {

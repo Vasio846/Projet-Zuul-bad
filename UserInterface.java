@@ -36,7 +36,7 @@ public class UserInterface implements ActionListener
      * (an object processing and executing the game commands) is
      * needed.
      * 
-     * @param gameEngine  The GameEngine object implementing the game logic.
+     * @param pGameEngine  The GameEngine object implementing the game logic.
      */
     public UserInterface( final GameEngine pGameEngine )
     {
@@ -46,6 +46,8 @@ public class UserInterface implements ActionListener
 
     /**
      * Print out some text into the text area.
+     * 
+     * @param pText String to be printed
      */
     public void print( final String pText )
     {

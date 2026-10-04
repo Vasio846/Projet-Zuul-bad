@@ -1,5 +1,8 @@
 import java.util.HashMap;
 import java.util.Stack;
+import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 /**
  * Game engine
@@ -7,40 +10,51 @@ import java.util.Stack;
 public class GameEngine
 {
     private Parser                aParser;
-    private Room                  aCurrentRoom;
-    private Stack<Room>           aPreviousRooms; // stocke la liste des pièces qu'on a visité
+    //private Room                  aCurrentRoom;
+    //private Stack<Room>           aPreviousRooms; // stocke la liste des pièces qu'on a visité
     private HashMap<String, Room> aRoomList;
     private UserInterface         aGui;
+    private Player                aPlayer1;
 
     /**
      * Constructor for objects of class GameEngine
+     * 
      */
     public GameEngine()
     {
         this.aParser        = new Parser();
         this.aRoomList      = new HashMap<String, Room>();
-        this.aPreviousRooms = new Stack<Room>();
+        //this.aPreviousRooms = new Stack<Room>();
+        this.aPlayer1       = new Player();
         this.createRooms();
     }
     
+    // ******** SETUP *********** 
+    
+    /**
+     * @param pUserInterface : UserInterface object
+     */
     public void setGUI( final UserInterface pUserInterface )
     {
         this.aGui = pUserInterface;
         this.printWelcome();
     }
-
+    
+    /**
+     * Creer les Rooms
+     */ 
     private void createRooms()
     {
         // 1st floor
         Room vHall = new Room("in the main hall", "Images/Hall.jpg");
-        Room vDiningRoom = new Room("in the dining room", "Images/DiningRoom.jpg");
-        Room vKitchen = new Room("in the kitchen", "Images/Kitchen.jpeg");
-        Room vLivingRoom = new Room("in the living room", "Images/LivingRoom.jpg");
-        Room vOffice = new Room("in the office", "Images/Office.jpg");
+        Room vDiningRoom = new Room("in the dining room", "Images/blank.jpg");
+        Room vKitchen = new Room("in the kitchen", "Images/blank.jpg");
+        Room vLivingRoom = new Room("in the living room", "Images/blank.jpg");
+        Room vOffice = new Room("in the office", "Images/blank.jpg");
         
         // 2nd floor  
-        Room vHall2 = new Room("above the main hall", "Images/Hall2.jpg");
-        Room vBedroom = new Room("in the bedroom", "Images/Bedroom.jpg");
+        Room vHall2 = new Room("above the main hall", "Images/blank.jpg");
+        Room vBedroom = new Room("in the bedroom", "Images/blank.jpg");
         
         // basement 
         Room vCellar = new Room("in the cellar", "Images/blank.jpg");
@@ -83,14 +97,39 @@ public class GameEngine
         this.aRoomList.put("Bedroom", vBedroom);
         this.aRoomList.put("Cellar", vCellar);
         
-        // choosing current room
-        this.aCurrentRoom = vHall;
+        // choosing starting room
+        this.aPlayer1.setCurrentRoom (vHall);
     }// createRooms()
+    
+        private void printWelcome()
+    {
+        this.aGui.print("\n");
+        this.aGui.println("Welcome to President Evil!");
+        this.aGui.println("Save the president from this haunted mansion.");
+        this.aGui.println("Type 'help' if you need help.");
+        this.aGui.print("\n");
+        
+        this.printLocationInfo();
+        
+        if ( this.aPlayer1.getCurrentRoom().getImageName() != null ) 
+            this.aGui.showImage( this.aPlayer1.getCurrentRoom().getImageName() );
+    }// printWelcome()
+    
+        private void printLocationInfo()
+    {
+        this.aGui.print("\n");
+        this.aGui.println( this.aPlayer1.getCurrentRoom().getLongDescription());
+        this.aGui.print("\n");
+    }// printLocationInfo()
+    
+    // ****** COMMANDS *********
     
     /**
      * Given a command, process (that is: execute) the command.
      * If this command ends the game, true is returned, otherwise false is
      * returned.
+     * 
+     * @param pCommandLine Text input by user
      */
     public void interpretCommand( final String pCommandLine ) 
     {
@@ -129,28 +168,10 @@ public class GameEngine
             else
                 this.endGame();
         }
+        else if ( vCommandWord.equals( "test" ) ) {
+            this.test( vCommand );
+        }
     }
-    
-    private void printWelcome()
-    {
-        this.aGui.print("\n");
-        this.aGui.println("Welcome to President Evil!");
-        this.aGui.println("Save the president from this haunted mansion.");
-        this.aGui.println("Type 'help' if you need help.");
-        this.aGui.print("\n");
-        
-        this.printLocationInfo();
-        
-        if ( this.aCurrentRoom.getImageName() != null ) 
-            this.aGui.showImage( this.aCurrentRoom.getImageName() );
-    }// printWelcome()
-    
-        private void printLocationInfo()
-    {
-        this.aGui.print("\n");
-        this.aGui.println(this.aCurrentRoom.getLongDescription());
-        this.aGui.print("\n");
-    }// printLocationInfo()
     
     private void printHelp()
     {
@@ -163,6 +184,9 @@ public class GameEngine
         this.aGui.print("\n");
     }// printHelp()
     
+    /**
+     * @param pDirection String indicating next room 
+     */
     private void goRoom(final Command pDirection)
     {
         if(pDirection.hasSecondWord() == false){
@@ -171,7 +195,7 @@ public class GameEngine
         }
         
         String vDirection = pDirection.getSecondWord();
-        Room vNextRoom = this.aCurrentRoom.getExit(vDirection);
+        Room vNextRoom = this.aPlayer1.getCurrentRoom().getExit(vDirection);
         
         // Testing if the second word is a valid direction :
         if(vNextRoom == null){
@@ -180,26 +204,28 @@ public class GameEngine
             return;
         }
         
-        this.aPreviousRooms.push(this.aCurrentRoom);
-        this.aCurrentRoom = vNextRoom;
+        this.aPlayer1.goNextRoom( pDirection );
         this.printLocationInfo();
-        if ( this.aCurrentRoom.getImageName() != null )
-            this.aGui.showImage( this.aCurrentRoom.getImageName() );
+        if ( this.aPlayer1.getCurrentRoom().getImageName() != null ) 
+            this.aGui.showImage( this.aPlayer1.getCurrentRoom().getImageName() );
     }// goRoom(.)
     
     private void back()
     {
-        if(this.aPreviousRooms.empty()) {
+        if(this.aPlayer1.noPreviousRoom() ) {
             this.aGui.println("You can't go back." + "\n");
             return;
         }
         
-        this.aCurrentRoom = this.aPreviousRooms.pop();
+        this.aPlayer1.setCurrentRoom( aPlayer1.popPreviousRoom() );
         this.printLocationInfo();
-        if ( this.aCurrentRoom.getImageName() != null ) 
-            this.aGui.showImage( this.aCurrentRoom.getImageName() );
+        if ( this.aPlayer1.getCurrentRoom().getImageName() != null ) 
+            this.aGui.showImage( this.aPlayer1.getCurrentRoom().getImageName() );
     }
     
+    /**
+     * @param pAction Command object indicating what the character is looking at
+     */
     private void look(final Command pAction)
     {   
         if(pAction.hasSecondWord() == false) {
@@ -209,7 +235,7 @@ public class GameEngine
         
         String vAction = pAction.getSecondWord();
         if (vAction.equals("item") || vAction.equals( "items" )) {
-            this.aGui.println( this.aCurrentRoom.getItemsDescription() );
+            this.aGui.println( this.aPlayer1.getCurrentRoom().getItemsDescription() );
             this.aGui.println("\n");
             return;
         }
@@ -221,4 +247,31 @@ public class GameEngine
         this.aGui.println( "Thank you for playing. Good bye. ");
         this.aGui.enable( false );
     }// endGame()
+    
+    private void test(final Command pFichier)
+    {
+        if(pFichier.hasSecondWord() == false) {
+            this.aGui.print("\n");
+            this.aGui.println( "test what ?" );
+            this.aGui.print("\n");
+            return;
+        }
+        
+        Scanner vSc;
+        String vFichier = pFichier.getSecondWord();
+        
+        try {
+            vSc = new Scanner( new File( vFichier + ".txt" ) );
+            while ( vSc.hasNextLine() ) {
+                String vLine = vSc.nextLine();
+                this.interpretCommand( vLine );
+            }
+        }
+        catch ( final FileNotFoundException pNF ) {
+            this.aGui.print("\n");
+            this.aGui.println( "test not found" );
+            this.aGui.print("\n");
+        }
+    }// test(.)
 }
+
