@@ -11,7 +11,7 @@
 public class CommandWords
 {
     // a constant array that will hold all valid command words
-    private static final String[] aValidCommands = {"go", "quit", "help"};
+    private static final String[] aValidCommands = {"go", "quit", "help", "look", "eat"};
 
     /**
      * Check whether a given String is a valid command word. 
@@ -26,5 +26,16 @@ public class CommandWords
         } // for
         // if we get here, the string was not found in the commands :
         return false;
-    } // isCommand()
+    }// isCommand()
+    
+    /**
+     * Print all valid commands to System.out.
+     */
+    public void showAll()
+    {
+        for(String vCommand : aValidCommands){
+            System.out.print(vCommand + " ");
+        }
+        System.out.println();
+    }// showAll()
 } // CommandWords

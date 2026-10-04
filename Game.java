@@ -27,6 +27,9 @@ public class Game
         Room vHall2 = new Room("above the main hall");
         Room vBedroom = new Room("in the bedroom");
         
+        // basement
+        Room vCellar = new Room("in the cellar");
+        
         vHall.setExit("east", vDiningRoom);
         vHall.setExit("west", vLivingRoom);
         vHall.setExit("stairs", vHall2);
@@ -35,6 +38,7 @@ public class Game
         vDiningRoom.setExit("west", vHall);
         
         vKitchen.setExit("south", vDiningRoom);
+        vKitchen.setExit("trapdoor", vCellar);
         
         vLivingRoom.setExit("north", vOffice);
         vLivingRoom.setExit("east", vHall);
@@ -62,7 +66,8 @@ public class Game
         
         // Testing if the second word is a valid direction :
         if(vNextRoom == null){
-            System.out.println("Invalid direction.");
+            System.out.println("There's nothing there.");
+            System.out.println();
             return;
         }
         
@@ -72,10 +77,8 @@ public class Game
     
     private void printLocationInfo()
     {
-        System.out.println("You are " + this.aCurrentRoom.getDescription());
         System.out.println();
-        System.out.print("Exits : ");
-        System.out.print(Room.getExitString(this.aCurrentRoom));
+        System.out.println(this.aCurrentRoom.getLongDescription());
         System.out.println();
     }// printLocationInfo()
     
@@ -85,7 +88,6 @@ public class Game
         System.out.println("Welcome to the World of Zuul!");
         System.out.println("World of Zuul is a new, incredibly boring adventure game.");
         System.out.println("Type 'help' if you need help.");
-        System.out.println();
         
         this.printLocationInfo();
     }// printWelcome()
@@ -94,17 +96,32 @@ public class Game
     {
         System.out.println("");
         System.out.println("You are lost. You are alone.");
-        System.out.println("You wander around at the university.");
+        System.out.println("You wander around at the manor.");
         System.out.println("");
         System.out.println("Your command words are: ");
-        System.out.println("  go quit help");
+        aParser.showCommands();
         System.out.println("");
     }// printHelp()
+    
+    private void look()
+    {
+        System.out.println();
+        System.out.println(this.aCurrentRoom.getLongDescription());
+        System.out.println();
+    }// look()
+    
+    private void eat()
+    {
+        System.out.println();
+        System.out.println("You have eaten and are no longer hungry anymore.");
+        System.out.println();
+    }// eat()  
     
     private boolean quit(final Command pCommand)
     {
         if(pCommand.hasSecondWord() == true){
             System.out.println("Quit what ?");
+            System.out.println("");
             return false;
         }
         
@@ -114,20 +131,29 @@ public class Game
     private boolean processCommand(final Command pCommand)
     {
         if(pCommand.isUnknown() == true){
-            System.out.println("I don't know what you mean");
+            System.out.println("I don't know what you mean...");
+            System.out.println("");
             return false;
         }
         
-        if(pCommand.getCommandWord().equals("quit")){
-            return quit(pCommand);
+        if(pCommand.getCommandWord().equals("help")){
+            this.printHelp();
+            return false;
         }
         if(pCommand.getCommandWord().equals("go")){
             this.goRoom(pCommand);
             return false;
         }
-        if(pCommand.getCommandWord().equals("help")){
-            this.printHelp();
+        if(pCommand.getCommandWord().equals("look")){
+            this.look();
             return false;
+        }
+        if(pCommand.getCommandWord().equals("eat")){
+            this.eat();
+            return false;
+        }
+        if(pCommand.getCommandWord().equals("quit")){
+            return quit(pCommand);
         }
         
         System.out.println("Programmer error : unknown command !");

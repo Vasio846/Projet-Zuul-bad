@@ -32,29 +32,32 @@ public class Room
         return this.aDescription;
     }// getDescription()
     
+    public String getLongDescription()
+    {
+        return "You are " + aDescription + ".\n" + this.getExitString();
+    }// getLongDescription()
+    
     /**
      * Define an exit for the room.
      */
     public void setExit(final String pDirection, final Room pNeighbor)
     {
         this.exits.put(pDirection, pNeighbor);
-    }
+    }// setExit(..)
     
     public Room getExit(final String pDirection)
     {
         return this.exits.get(pDirection);
     }// getExit(.)
     
-    public static String getExitString(final Room pRoom)
+    public String getExitString()
     {
-        String vExits = "";
+        String vExits = "Exits : ";
         
-        Set<String> vKeys = pRoom.exits.keySet();
-        for (String vDir: pRoom.exits.keySet()) {
-            String vKey = vDir.toString();
-            vExits = vExits + vKey + " ";
+        for (String vDir: this.exits.keySet()) {
+            vExits = vExits + vDir + " ";
         }
         
         return vExits;
-    }
+    }// getExitString(.)
 }// Room

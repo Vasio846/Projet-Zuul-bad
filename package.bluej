@@ -1,17 +1,17 @@
 #BlueJ package file
-dependency1.from=Parser
-dependency1.to=CommandWords
+dependency1.from=Game
+dependency1.to=Room
 dependency1.type=UsesDependency
-dependency2.from=Parser
-dependency2.to=Command
+dependency2.from=Game
+dependency2.to=Parser
 dependency2.type=UsesDependency
 dependency3.from=Game
-dependency3.to=Room
+dependency3.to=Command
 dependency3.type=UsesDependency
-dependency4.from=Game
-dependency4.to=Parser
+dependency4.from=Parser
+dependency4.to=CommandWords
 dependency4.type=UsesDependency
-dependency5.from=Game
+dependency5.from=Parser
 dependency5.to=Command
 dependency5.type=UsesDependency
 editor.fx.0.height=918

@@ -29,7 +29,7 @@ public class Parser
         this.aValidCommands = new CommandWords();
         this.aReader        = new Scanner( System.in );
         // System.in designe le clavier, comme System.out designe l'ecran
-    } // Parser()
+    }// Parser()
 
     /**
      * @return The next command from the user.
@@ -63,5 +63,13 @@ public class Parser
         else {
             return new Command( null, null ); 
         }
-    } // getCommand()
+    }// getCommand()
+    
+    /**
+     * Print out a list of valid commands.
+     */
+    public void showCommands()
+    {
+        aValidCommands.showAll();
+    }
 } // Parser
