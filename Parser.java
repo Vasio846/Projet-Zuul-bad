@@ -1,3 +1,5 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 /**
@@ -18,6 +20,7 @@ import java.util.StringTokenizer;
  */
 public class Parser 
 {
+    
     private CommandWords aValidCommands;  // (voir la classe CommandWords)
 
     /**
@@ -31,7 +34,7 @@ public class Parser
     /**
      * @return The next command from the user.
      */
-    public Command getCommand(final String pInputLine) 
+    public Command getCommand(final String pInputLine)
     {
         String vWord1;
         String vWord2;
@@ -47,7 +50,9 @@ public class Parser
             vWord2 = vTokenizer.nextToken();      // recupere le premier mot
         else
             vWord2 = null;
-
+        
+        // on ignore le reste de la input line
+        
         // Verifie si le premier mot est une commande connue.
         // Si oui, cree un objet Command avec ce mot. (vWord2 peut etre null)
         // Sinon, cree une commande vide avec "null" (pour dire 'commande inconnue').

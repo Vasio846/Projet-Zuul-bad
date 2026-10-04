@@ -29,18 +29,18 @@ public class GameEngine
     private void createRooms()
     {
         // 1st floor
-        Room vHall = new Room("in the main hall", null);
-        Room vDiningRoom = new Room("in the dining room", null);
-        Room vKitchen = new Room("in the kitchen", null);
-        Room vLivingRoom = new Room("in the living room", null);
-        Room vOffice = new Room("in the office", null);
+        Room vHall = new Room("in the main hall", "Hall.jpg");
+        Room vDiningRoom = new Room("in the dining room", "diningRoom.jpg");
+        Room vKitchen = new Room("in the kitchen", "Kitchen.jpg");
+        Room vLivingRoom = new Room("in the living room", "blank.jpg");
+        Room vOffice = new Room("in the office", "blank.jpg");
         
         // 2nd floor  
-        Room vHall2 = new Room("above the main hall", null);
-        Room vBedroom = new Room("in the bedroom", null);
+        Room vHall2 = new Room("above the main hall", "blank.jpg");
+        Room vBedroom = new Room("in the bedroom", "blank.jpg");
         
         // basement 
-        Room vCellar = new Room("in the cellar", null);
+        Room vCellar = new Room("in the cellar", "blank.jpg");
         
         // setting exits
         vHall.setExit("east", vDiningRoom);
@@ -65,6 +65,9 @@ public class GameEngine
         vBedroom.setExit("south", vHall2);
         
         vCellar.setExit("up", vKitchen);
+        
+        // setting items
+        vHall.setItem("vase", 13);
         
         // creating room Hashmap
         this.aRoomList.put("Hall", vHall);
@@ -101,7 +104,7 @@ public class GameEngine
         else if ( vCommandWord.equals( "go" ) )
             this.goRoom( vCommand );
         else if ( vCommandWord.equals( "look" ) ) {
-            this.printLocationInfo();
+            this.look( vCommand );
         }            
         else if ( vCommandWord.equals( "eat" ) ) {
             this.aGui.print("\n");
@@ -166,6 +169,22 @@ public class GameEngine
         this.aCurrentRoom = vNextRoom;
         this.printLocationInfo();
     }// goRoom(.)
+    
+    private void look(final Command pAction)
+    {   
+        if(pAction.hasSecondWord() == false) {
+            this.printLocationInfo();
+            return;
+        }
+        
+        String vAction = pAction.getSecondWord();
+        if (vAction.equals( "item" )) {
+            this.aGui.println( this.aCurrentRoom.getItemDescription() );
+            this.aGui.println("\n");
+            return;
+        }
+        else this.aGui.println("What do you want to look at ?" + "\n");
+    }
     
     private void endGame()
     {
