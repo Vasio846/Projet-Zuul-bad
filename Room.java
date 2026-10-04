@@ -1,3 +1,4 @@
+import java.lang.StringBuilder;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -9,22 +10,18 @@ import java.util.Set;
 public class Room
 {
     private String aDescription;
-    private Room aNorthExit;
-    private Room aEastExit;
-    private Room aSouthExit;
-    private Room aWestExit;
-    private Room aUpExit;
-    private Room aDownExit;
     private HashMap<String, Room> exits;
+    private String aImageName;
     
     /**
      * Create a room
      * pDescription = text deescribing the room
      */
-    public Room(final String pDescription)
+    public Room(final String pDescription, final String pImage)
     {
         this.aDescription = pDescription;
         this.exits = new HashMap<String, Room>();
+        this.aImageName = pImage;
     }// Room(.)
     
     public String getDescription()
@@ -52,12 +49,18 @@ public class Room
     
     public String getExitString()
     {
-        String vExits = "Exits : ";
-        
+        StringBuilder vExits = new StringBuilder("Exits : ");
         for (String vDir: this.exits.keySet()) {
-            vExits = vExits + vDir + " ";
+            vExits.append(vDir + " ");
         }
-        
-        return vExits;
+        return vExits.toString();
     }// getExitString(.)
+    
+    /**
+     * accesseur aImageName
+     */
+    public String getImageName()
+    {
+        return this.aImageName;
+    }
 }// Room
