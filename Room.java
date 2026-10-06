@@ -12,7 +12,7 @@ public class Room
     private String                aDescription;
     private HashMap<String, Room> exits;
     private String                aImageName;
-    private HashMap<String,Item>  aItems;
+    private ItemList              aItems;
     private boolean               aLights;
     
     /**
@@ -27,8 +27,8 @@ public class Room
         this.aDescription = pDescription;
         this.exits        = new HashMap<String, Room>();
         this.aImageName   = pImage;
-        this.aItems       = new HashMap<String, Item>();
-        this.aLights      = false;
+        this.aItems       = new ItemList();
+        this.aLights      = true;
     }// Room(.)
     
     // ***** DESCRIPTION ********
@@ -43,21 +43,17 @@ public class Room
         StringBuilder vLongDescription = new StringBuilder("You are : ");
         vLongDescription.append(this.aDescription);
         vLongDescription.append(".\n" + this.getExitString() );
-        vLongDescription.append(".\n" + this.getItemString() );
+        vLongDescription.append(".\n" + "Items : " + this.getItemString() );
         return vLongDescription.toString();
     }// getLongDescription()
 
     public String getItemsDescription()
     {
-        if ( this.aItems.isEmpty() ) {
+        if ( this.aItems.empty() ) {
             return "No item here.";
         }
         
-        StringBuilder vItems = new StringBuilder("Items : \n");
-        for (String vItem: this.aItems.keySet()) {
-            vItems.append( aItems.get(vItem).getLongDescription() + "\n" );
-        }
-        return vItems.toString();
+        return this.aItems.getItemsDescription();
     }
     
     // ****** MODIFICATIONS *********
@@ -69,12 +65,12 @@ public class Room
      */
     public void addItem(final String pNom, final String pDescription, final int pWeight, final int pValue)
     {
-        this.aItems.put(pNom, new Item(pNom, pDescription, pWeight, pValue));
+        this.aItems.addItem(new Item(pNom, pDescription, pWeight, pValue));
     }
     
     public void removeItem(final String pNom)
     {
-        this.aItems.remove(pNom);
+        this.aItems.removeItem(pNom);
     }
     
     /**
@@ -98,11 +94,16 @@ public class Room
     /**
      * sert a allumer eteindre les lumieres
      */
-    public void switchLights()
+    public boolean switchLights()
     {
-        if ( this.getLights() ) 
+        if ( this.getLights() ) {
             this.lightsOff();
-        else this.lightsOn();
+            return false;
+        }
+        else {
+            this.lightsOn();
+            return true;
+        }
     }
     
     // ******** GET *************
@@ -121,9 +122,9 @@ public class Room
         return vExits.toString();
     }// getExitString(.)
     
-    public Item getItem(final String pItemName)
+    public Item getItem( final String pName )
     {
-        return this.aItems.get(pItemName);
+        return this.aItems.getItem( pName );
     }
     
     /**
@@ -132,16 +133,10 @@ public class Room
      */
     public String getItemString()
     {
-        if ( this.aItems.isEmpty() ) {
+        if ( this.aItems.empty() ) {
             return "No item here.";
         }
-        
-        StringBuilder vItems = new StringBuilder("Items : ");
-        for (String vItem : this.aItems.keySet()) {
-            vItems.append(vItem + "  ");
-        }
-
-        return vItems.toString();
+        return this.aItems.getItemString();
     }// getExitString(.)
     
     /**

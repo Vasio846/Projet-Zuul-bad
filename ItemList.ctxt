@@ -1,0 +1,23 @@
+#BlueJ class context
+comment0.target=ItemList
+comment0.text=\r\n\ Classe\ g\u00E9rant\ les\ listes\ d'items.\r\n\r\n\ @author\ Jeremy\r\n
+comment1.params=
+comment1.target=ItemList()
+comment1.text=\r\n\ Constructeur\ d'objets\ de\ classe\ ItemList\r\n
+comment2.params=pItem
+comment2.target=void\ addItem(Item)
+comment3.params=pName
+comment3.target=void\ removeItem(java.lang.String)
+comment4.params=pName
+comment4.target=Item\ getItem(java.lang.String)
+comment5.params=
+comment5.target=java.lang.String\ getItemsDescription()
+comment6.params=
+comment6.target=java.lang.String\ getItemString()
+comment7.params=
+comment7.target=int\ getTotalWeight()
+comment8.params=pItem
+comment8.target=boolean\ hasItem(java.lang.String)
+comment9.params=
+comment9.target=boolean\ empty()
+numComments=10

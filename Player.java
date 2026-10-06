@@ -2,15 +2,15 @@ import java.util.HashMap;
 import java.util.Stack;
 
 /**
- * Décrivez votre classe Player ici.
+ * Classe gérant le Player
  *
- * @author (votre nom)
- * @version (un numéro de version ou une date)
+ * @author Jeremy
  */
 public class Player
 {
     private int                   aHealth;
-    private HashMap<String,Item>  aInventory;
+    private int                   aMaxWeight; 
+    private ItemList              aInventory;
     private Room                  aCurrentRoom;
     private Stack<Room>           aPreviousRooms;
 
@@ -19,10 +19,16 @@ public class Player
      */
     public Player()
     {
-        this.aHealth = 50;
-        this.aInventory = new HashMap<String, Item>();
-        this.aCurrentRoom = new Room( "void", null );
+        this.aHealth        = 50;
+        this.aMaxWeight     = 200;
+        this.aInventory     = new ItemList();
+        this.aCurrentRoom   = new Room( "void", null );
         this.aPreviousRooms = new Stack<Room>();
+    }
+    
+    public void addMaxWeight( final int pWeight )
+    {
+        this.aMaxWeight = this.aMaxWeight + pWeight;
     }
     
     //  ************* ROOM ************
@@ -66,16 +72,43 @@ public class Player
     
     public Item searchInventory( final String pName )
     {
-        return this.aInventory.get(pName);
+        return this.aInventory.getItem(pName);
     }
     
-    public void pickUpItem( final Item pItem )
+    public boolean pickUpItem( final Item pItem )
     {
-        this.aInventory.put(pItem.getName(), pItem);
+        this.aInventory.addItem(pItem);
+        
+        if ( this.isOverMaxWeight() )
+            return true;
+        return false;
     }
     
     public void dropItem( final Item pItem )
     {
-        this.aInventory.remove(pItem.getName());
+        this.aInventory.removeItem(pItem.getName());
+    }
+    
+    public boolean isOverMaxWeight()
+    {
+        int vWeight = this.aInventory.getTotalWeight();
+        return vWeight > this.aMaxWeight;
+    }
+    
+    public String itemList()
+    {
+        return this.aInventory.getItemString();
+    }
+    
+    public boolean emptyInv()
+    {
+        if ( this.aInventory.empty() )
+            return true;
+        return false;
+    }
+    
+    public boolean hasItem(final String pItem)
+    {
+        return this.aInventory.hasItem(pItem);
     }
 }
