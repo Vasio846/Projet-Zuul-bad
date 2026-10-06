@@ -1,3 +1,5 @@
+package ItemPack;
+
 import java.util.HashMap;
 
 /**
@@ -62,6 +64,15 @@ public class ItemList
             vWeight = vWeight + this.getItem(vItem).getWeight();
         }
         return vWeight;
+    }
+    
+    public int getTotalPrice()
+    {
+        int vPrice = 0;
+        for ( String vItem : this.aInventory.keySet() ) {
+            vPrice = vPrice + this.getItem(vItem).getValue();
+        }
+        return vPrice;
     }
     
     // ********* TESTS **********

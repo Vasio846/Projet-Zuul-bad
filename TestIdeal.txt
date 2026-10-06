@@ -1,0 +1,20 @@
+go west
+go north
+look desk
+take coin_pouch
+take tablet
+take Spotion
+use Spotion
+back
+take red_key
+back
+use tablet
+go up
+go north
+drop red_key
+look chest
+take ingots
+use tablet 
+take vase
+take chair
+exit

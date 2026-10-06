@@ -1,3 +1,5 @@
+package Commands;
+
 /**
  * Classe Command - une commande du jeu d'aventure Zuul.
  *

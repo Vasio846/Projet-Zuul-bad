@@ -112,7 +112,7 @@ public class UserInterface implements ActionListener
         this.aImage = new JLabel();
         
         // add button 
-        this.aButton = new JButton("map");
+        this.aButton = new JButton("look");
         
         JPanel vPanel = new JPanel();
         vPanel.setLayout( new BorderLayout() ); // ==> only five places
@@ -147,7 +147,7 @@ public class UserInterface implements ActionListener
      */
     @Override public void actionPerformed( final ActionEvent pE ) 
     {
-        if (pE.getActionCommand() == "map") this.aEngine.interpretCommand( "map");
+        if (pE.getActionCommand() == "look") this.aEngine.interpretCommand( "look");
         else this.processCommand(); // never suppress this line
     } // actionPerformed(.)
 

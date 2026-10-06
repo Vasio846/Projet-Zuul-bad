@@ -1,3 +1,5 @@
+package Commands;
+
 import java.lang.StringBuilder;
 
 /**
@@ -14,7 +16,10 @@ public class CommandWords
 {
     // a constant array that will hold all valid command words
     private static final String[] aValidCommands = {
-        "go", "quit", "help", "look", "map", "back", "test", "take", "drop", "use", "inventory"
+        "go", "quit", "help", "look", "back", "test", "take", "drop", "use", "inventory", "exit", "alea"
+    };
+    private static final String[] aPublicCommands = {
+        "go", "quit", "help", "look", "back", "take", "drop", "use", "inventory", "exit"
     };
     
     /**
@@ -43,4 +48,13 @@ public class CommandWords
         }
         return vList.toString();
     }// showAll()
+    
+    public String getPublicCommandList()
+    {
+        StringBuilder vList = new StringBuilder(" ");
+        for(String vCommand : this.aPublicCommands){
+            vList.append(vCommand + " ");
+        }
+        return vList.toString();
+    }
 } // CommandWords

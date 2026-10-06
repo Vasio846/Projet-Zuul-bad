@@ -1,6 +1,15 @@
+package RoomPack;
+
 import java.lang.StringBuilder;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.ArrayList;
+
+import ItemPack.Item;
+import ItemPack.ItemList;
+
+import NpcPack.Npc;
+import NpcPack.MovingNpc;
 
 /**
  * Classe Room - un lieu du jeu d'aventure Zuul.
@@ -9,12 +18,13 @@ import java.util.Set;
  */
 public class Room
 {
-    private String                aDescription;
-    private HashMap<String, Room> exits;
-    private String                aImageName;
-    private ItemList              aItems;
-    private boolean               aLights;
-    private HashMap<String, Door> aDoors;
+    private String                      aDescription;
+    private HashMap<String, Room>       exits;
+    private String                      aImageName;
+    private ItemList                    aItems;
+    private boolean                     aLights;
+    private HashMap<String, Door>       aDoors;
+    private HashMap<String, Npc>        aChars;
     
     /**
      * Create a room
@@ -31,6 +41,7 @@ public class Room
         this.aItems       = new ItemList();
         this.aLights      = true;
         this.aDoors       = new HashMap<String, Door>();
+        this.aChars       = new HashMap<String, Npc>();
     }// Room(.)
     
     // ***** DESCRIPTION ********
@@ -46,6 +57,7 @@ public class Room
         vLongDescription.append(this.aDescription);
         vLongDescription.append(".\n" + this.getExitString() );
         vLongDescription.append(".\n" + "Items : " + this.getItemString() );
+        vLongDescription.append(".\n" + "Npcs : " + this.getNpcString() );
         return vLongDescription.toString();
     }// getLongDescription()
 
@@ -73,6 +85,20 @@ public class Room
     public void removeItem(final String pNom)
     {
         this.aItems.removeItem(pNom);
+    }
+    
+    /**
+     * @param pNom Npc name
+     * @param pMove true : moves, false : doesn't move
+     */
+    public void addNpc(final String pName, final Npc pNpc)
+    {
+        this.aChars.put( pName, pNpc );
+    }
+    
+    public void removeNpc(final String pName)
+    {
+        this.aChars.remove(pName);
     }
     
     /**
@@ -128,6 +154,27 @@ public class Room
         }
         return vExits.toString();
     }// getExitString(.)
+    
+    public ArrayList<String> getExitSet()
+    {
+        ArrayList<String> vAL = new ArrayList<String>(this.exits.keySet());
+        return vAL;
+    }
+    
+    /**
+     * returns String containing all Npcs in the room
+     */
+    public String getNpcString()
+    {
+        if ( this.aChars.isEmpty() ) {
+            return "No one here.";
+        }
+        StringBuilder vNpcs = new StringBuilder("");
+        for (String vNpc : this.aChars.keySet()) {
+            vNpcs.append(vNpc + "  ");
+        }
+        return vNpcs.toString();
+    }
     
     public Item getItem( final String pName )
     {

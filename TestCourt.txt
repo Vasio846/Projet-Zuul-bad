@@ -1,4 +1,5 @@
 go west
+go north
 look desk
 back
 take red_key

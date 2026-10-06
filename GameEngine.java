@@ -7,6 +7,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Random;
 
+import Commands.Parser;
+import Commands.Command;
+
+import RoomPack.Room;
+
+import ItemPack.Item;
+
+import NpcPack.Npc;
+
 /**
  * Game engine
  */
@@ -19,6 +28,8 @@ public class GameEngine
     private Player                aPlayer1;
     private int                   aSuspicion;
     private Room                  aTabletCharge; // memory for tp tablet
+    private String                aAlea; // pour truquer les random en mode test
+    private HashMap<String, Npc>  aNpcList;
 
     /**
      * Constructor for objects of class GameEngine
@@ -29,10 +40,12 @@ public class GameEngine
         this.aParser        = new Parser();
         this.aRoomList      = new HashMap<String, Room>();
         this.aRandRooms     = new ArrayList<Room>();
+        this.aNpcList       = new HashMap<String, Npc>();
         this.aPlayer1       = new Player();
         this.createRooms();
         this.aSuspicion     = 0;
         this.aTabletCharge  = null;
+        this.aAlea          = null;
     }
     
     // ******** SETUP *********** 
@@ -108,8 +121,16 @@ public class GameEngine
         vHall.addItem("chair", "a wooden chair", 50, 10);
         vDiningRoom.addItem("rock", "a big rock", 200, 0);
         vLivingRoom.addItem("red_key", "a small red key", 5, 15); // opens bedroom
-        vKitchen.addItem("pineapple_pizza", "a pineapple pizza", 15, -500);
+        vKitchen.addItem("pizza", "a pineapple pizza", 15, -500);
         vCellar.addItem("water_bucket", "a bucket of stagnant water", 40, 20);
+        
+        // creating Npcs
+        Npc vRat = new Npc("rat", vKitchen, true);
+        Npc vCat = new Npc("cat", vLivingRoom, false);
+        
+        // setting Npcs
+        vKitchen.addNpc("rat", vRat);
+        vLivingRoom.addNpc("cat", vCat);
         
         // creating room Hashmap
         this.aRoomList.put("Hall", vHall);
@@ -123,6 +144,10 @@ public class GameEngine
         this.aRoomList.put("Cellar", vCellar);
         this.aRoomList.put("Mirror", vMirror);
         
+        // creating npc Hashmap
+        this.aNpcList.put("rat", vRat);
+        this.aNpcList.put("cat", vCat);
+        
         // rooms for randomizer 
         Collections.addAll(aRandRooms, vHall, vDiningRoom, vKitchen, vLivingRoom, vOffice, vHall2, vBathroom);
         
@@ -133,8 +158,10 @@ public class GameEngine
         private void printWelcome()
     {
         this.aGui.print("\n");
-        this.aGui.println("Welcome to President Evil!");
-        this.aGui.println("Save the president from this haunted mansion.");
+        this.aGui.println("Find the mansion's treasures.");
+        this.aGui.println("Don't let anybody notice you.");
+        this.aGui.println("Exit the mansion once you've collected enough treasures");
+        this.aGui.print("\n");
         this.aGui.println("Type 'help' if you need help.");
         this.aGui.print("\n");
         
@@ -159,12 +186,36 @@ public class GameEngine
         this.aGui.print("\n");
     }// printLocationInfo()
     
+    private void moveNpc()
+    {
+        for ( String vNpc : this.aNpcList.keySet() ) {
+            if ( this.aNpcList.get(vNpc).moves() ) ( this.aNpcList.get(vNpc) ).move();
+        }
+    }
+    
     private void lose()
     {
         this.aGui.print("\n");
         this.aGui.println("You were not discreet enough.");
         this.aGui.println("The police have been alerted to your presence.");
         this.aGui.println("Game over.");
+        this.aGui.print("\n");
+        this.endGame();
+    }
+    
+    private void exit()
+    {
+        if ( !this.aPlayer1.getCurrentRoom().getDescription().equals("in the main hall") ) {
+            this.aGui.print("\n");
+            this.aGui.println("You are not near the exit.");
+            this.aGui.println("Return to the main hall to exit.");
+            this.aGui.print("\n");
+            return;
+        }
+        this.aGui.print("\n");
+        this.aGui.println("You have exited the mansion.");
+        this.aGui.println("No one noticed you, good job !");
+        this.aGui.println("You have collected " + this.aPlayer1.getTotalValue() + " points.");
         this.aGui.print("\n");
         this.endGame();
     }
@@ -217,11 +268,9 @@ public class GameEngine
         }
         else if ( vCommandWord.equals( "back" ) ) {
             this.back();
-        }
-        else if ( vCommandWord.equals( "map" ) ) {
-            this.aGui.print("\n");
-            this.aGui.println("You don't have a map. ");
-            this.aGui.print("\n");
+        }     
+        else if ( vCommandWord.equals( "exit" ) ) {
+            this.exit();
         }     
         else if ( vCommandWord.equals( "quit" ) ) {
             if ( vCommand.hasSecondWord() )
@@ -234,6 +283,10 @@ public class GameEngine
         else if ( vCommandWord.equals( "test" ) ) {
             this.test( vCommand );
         }
+        else if ( vCommandWord.equals( "alea" ) ) {
+            this.alea( vCommand );
+        }
+        this.moveNpc();
     }
     
     private void printHelp()
@@ -243,7 +296,7 @@ public class GameEngine
         this.aGui.println("Don't let anybody notice you.");
         this.aGui.print("\n");
         this.aGui.println("Your command words are: ");
-        this.aGui.println(aParser.getCommands()); // utilise Parser pour print qqchose dépendant de CommandWords
+        this.aGui.println(aParser.getPublicCommands()); // utilise Parser pour print qqchose dépendant de CommandWords
         this.aGui.print("\n");
     }// printHelp()
     
@@ -302,15 +355,21 @@ public class GameEngine
         if ( this.aPlayer1.getCurrentRoom().getImageName() != null ) 
             this.aGui.showImage( this.aPlayer1.getCurrentRoom().getImageName() );
         
-        if ( this.aPlayer1.isOverMaxWeight() )
+        if ( this.aPlayer1.isOverMaxWeight() ) {
             this.suspicion( 10 );
+            this.aGui.println("You are carrying too much.");
+            this.aGui.println("You make noise while moving." + "\n");
+        }
     }// goRoom(.)
     
     private void goRandom()
     {
         Random r = new Random();
-	int vN = r.nextInt( this.aRandRooms.size() + 1 ); // genere un int aleatoire
-        this.aPlayer1.goNextRoom( this.aRandRooms.get(vN) ); // va a une Room aleatoire en fonction de l'int
+        int vN = r.nextInt( this.aRandRooms.size() + 1 ); // genere un int aleatoire
+        Room vDestination;
+        if (this.aAlea != null) vDestination = this.aRoomList.get(this.aAlea);
+        else vDestination = this.aRandRooms.get(vN); // choisis une Room aleatoire en fonction de l'int
+        this.aPlayer1.goNextRoom( vDestination ); 
     }// goRandom()
     
     private void back()
@@ -391,6 +450,19 @@ public class GameEngine
                 this.endGame();
             }
         }
+        else if ( vAction.equals("rat") ) {
+            if (this.aPlayer1.getCurrentRoom().getDescription().equals( "in the living room" )) {
+                if ( this.itemInInventory("rat") ) {
+                    this.aGui.print("\n");
+                    this.aGui.println("You give the rat to the cat.");
+                    this.aGui.println("The cat eats it and runs away");
+                    this.aGui.println("...\n...\n...");
+                    this.aGui.println("There is a pearl left where the cat was sitting.");
+                    this.aGui.print("\n");
+                    this.aRoomList.get("LivingRoom").addItem("pearl", "a shiny pearl", 10, 70);
+                }
+            }
+        }
     }// use(.)
     
     /**
@@ -456,6 +528,21 @@ public class GameEngine
             }
             else this.aGui.println("What do you want to look at ?" + "\n");
         }
+        else if (vAction.equals("chest")) {
+            if (this.aPlayer1.getCurrentRoom().getDescription().equals("in the bedroom")) {
+                this.aGui.println("You find gold ingots in the chest !" + "\n"); 
+                this.aRoomList.get("Bedroom").addItem("ingots", "a pile of golden ingots", 200, 1000);
+                this.printLocationInfo();
+            }
+            else this.aGui.println("What do you want to look at ?" + "\n");
+        }
+        else if (vAction.equals("cat")) {
+            if (this.aPlayer1.getCurrentRoom().getDescription().equals("in the living room")) {
+                this.aGui.println("The cat looks hungry." + "\n"); 
+                this.printLocationInfo();
+            }
+            else this.aGui.println("What do you want to look at ?" + "\n");
+        }
         else this.aGui.println("What do you want to look at ?" + "\n");
     }
     
@@ -489,6 +576,18 @@ public class GameEngine
         }
         
         String vItemName = pCommand.getSecondWord();
+        
+        if (vItemName.equals("rat")) {
+            if ( this.aPlayer1.getCurrentRoom().getDescription().equals( this.aNpcList.get("rat").getCurrentRoom().getDescription() ) ) {
+                this.aPlayer1.pickUpItem(new Item("rat", "a dead rat", 10, 0));
+                this.aPlayer1.getCurrentRoom().removeNpc("rat");
+                this.aNpcList.remove("rat");
+                this.aGui.print("\n");
+                this.aGui.println("You have caught the rat. ");
+                this.aGui.print("\n");
+                return;
+            }
+        }
         
         try { 
             Item vItem = this.aPlayer1.getCurrentRoom().getItem(vItemName);
@@ -541,6 +640,11 @@ public class GameEngine
         }
     }
     
+    /**
+     * permet de lancer un test
+     * 
+     * @param pFichier nom du fichier txt contenant les instructions ligne par ligne
+     */
     private void test(final Command pFichier)
     {
         if(pFichier.hasSecondWord() == false) {
@@ -566,6 +670,19 @@ public class GameEngine
             this.aGui.print("\n");
         }
     }// test(.)
+    
+    /**
+     * commande pour truquer les tirages aleatoires
+     * n'est utilisee que dans les tests
+     */
+    private void alea( final Command pCommand ) // commande reservee aux tests
+    {
+        if (pCommand.hasSecondWord()) {
+            String vS = pCommand.getSecondWord();
+            this.aAlea = vS;
+        }
+        else this.aAlea = null;
+    }
     
     // ********* MODIFICATIONS **********
     

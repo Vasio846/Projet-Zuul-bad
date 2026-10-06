@@ -1,6 +1,11 @@
 import java.util.HashMap;
 import java.util.Stack;
 
+import RoomPack.Room;
+
+import ItemPack.Item;
+import ItemPack.ItemList;
+
 /**
  * Classe gérant le Player
  *
@@ -14,7 +19,7 @@ public class Player
     private Room                  aCurrentRoom;
     private Stack<Room>           aPreviousRooms;
     private boolean               aStockRooms;  // détermine si les rooms sont Stackees ou pas
-
+    
     /**
      * Constructeur d'objets de classe Player
      */
@@ -100,6 +105,11 @@ public class Player
     {
         int vWeight = this.aInventory.getTotalWeight();
         return vWeight > this.aMaxWeight;
+    }
+    
+    public int getTotalValue()
+    {
+        return this.aInventory.getTotalPrice();
     }
     
     public String itemList()

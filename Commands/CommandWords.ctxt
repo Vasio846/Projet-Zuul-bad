@@ -7,4 +7,6 @@ comment1.text=\r\n\ Check\ whether\ a\ given\ String\ is\ a\ valid\ command\ wor
 comment2.params=
 comment2.target=java.lang.String\ getCommandList()
 comment2.text=\r\n\ Print\ all\ valid\ commands\ to\ System.out.\r\n
-numComments=3
+comment3.params=
+comment3.target=java.lang.String\ getPublicCommandList()
+numComments=4

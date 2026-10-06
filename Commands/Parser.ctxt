@@ -10,4 +10,6 @@ comment2.text=\r\n\ @return\ The\ next\ command\ from\ the\ user.\r\n
 comment3.params=
 comment3.target=java.lang.String\ getCommands()
 comment3.text=\r\n\ Print\ out\ a\ list\ of\ valid\ commands.\r\n
-numComments=4
+comment4.params=
+comment4.target=java.lang.String\ getPublicCommands()
+numComments=5

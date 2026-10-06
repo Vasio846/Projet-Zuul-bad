@@ -1,4 +1,4 @@
-
+package RoomPack;
 
 public class Door
 {

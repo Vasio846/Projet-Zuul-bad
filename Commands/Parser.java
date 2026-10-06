@@ -1,3 +1,5 @@
+package Commands;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
@@ -68,5 +70,10 @@ public class Parser
     public String getCommands()
     {
         return this.aValidCommands.getCommandList();
+    }
+    
+    public String getPublicCommands()
+    {
+        return this.aValidCommands.getPublicCommandList();
     }
 } // Parser
