@@ -689,7 +689,7 @@ public class GameEngine
     private void suspicion(final int pSuspicion)
     {
         this.aSuspicion = this.aSuspicion + pSuspicion;
-        if (this.aSuspicion >= 100) this.lose();
+        if (this.aSuspicion >= 50) this.lose();
     }
 }
 
