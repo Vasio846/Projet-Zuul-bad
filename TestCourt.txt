@@ -1,6 +1,9 @@
-go east
-go north
-eat
-back
-back
 go west
+look desk
+back
+take red_key
+back
+go up 
+go north
+look
+look wardrobe

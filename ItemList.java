@@ -68,7 +68,10 @@ public class ItemList
     
     public boolean hasItem(final String pItem)
     {
-        return true;
+        for ( String vItem : this.aInventory.keySet() ) {
+            if (vItem.equals(pItem)) return true;
+        }
+        return false;
     }
     
     public boolean empty()

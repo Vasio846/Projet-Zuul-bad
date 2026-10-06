@@ -14,6 +14,7 @@ public class Room
     private String                aImageName;
     private ItemList              aItems;
     private boolean               aLights;
+    private HashMap<String, Door> aDoors;
     
     /**
      * Create a room
@@ -29,6 +30,7 @@ public class Room
         this.aImageName   = pImage;
         this.aItems       = new ItemList();
         this.aLights      = true;
+        this.aDoors       = new HashMap<String, Door>();
     }// Room(.)
     
     // ***** DESCRIPTION ********
@@ -75,10 +77,15 @@ public class Room
     
     /**
      * Define an exit for the room.
+     * 
+     * @param pDirection direction of the exit
+     * @param pNeighbor Room linked to the exit
+     * @param pDoor adds a locked door if true
      */ 
-    public void setExit(final String pDirection, final Room pNeighbor)
+    public void setExit(final String pDirection, final Room pNeighbor, final boolean pDoor)
     {
         this.exits.put(pDirection, pNeighbor);
+        if (pDoor) this.aDoors.put( pDirection,new Door() );
     }// setExit(..)
     
     public void lightsOn()
@@ -150,5 +157,20 @@ public class Room
     public boolean getLights()
     {
         return this.aLights;
+    }
+    
+    public boolean directionLocked(final String vDirection)
+    {
+        return this.aDoors.get(vDirection).isLocked();
+    }
+    
+    public boolean hasDoor(final String vDirection)
+    {
+        return !(this.aDoors.get(vDirection) == null );
+    }
+    
+    public Door getDoor(final String vDirection)
+    { 
+        return this.aDoors.get(vDirection);
     }
 }// Room

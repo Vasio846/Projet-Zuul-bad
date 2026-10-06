@@ -1,0 +1,16 @@
+#BlueJ class context
+comment0.target=Door
+comment1.params=
+comment1.target=Door()
+comment1.text=\r\n\ Constructeur\ d'objets\ de\ classe\ Door\r\n
+comment2.params=
+comment2.target=void\ lockDoor()
+comment3.params=
+comment3.target=void\ unlockDoor()
+comment4.params=
+comment4.target=boolean\ isLocked()
+comment5.params=
+comment5.target=void\ oneWay()
+comment6.params=
+comment6.target=boolean\ isOneWay()
+numComments=7

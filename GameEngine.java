@@ -1,8 +1,11 @@
 import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Stack;
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Random;
 
 /**
  * Game engine
@@ -11,8 +14,11 @@ public class GameEngine
 {
     private Parser                aParser;
     private HashMap<String, Room> aRoomList;
+    private ArrayList<Room>       aRandRooms;
     private UserInterface         aGui;
     private Player                aPlayer1;
+    private int                   aSuspicion;
+    private Room                  aTabletCharge; // memory for tp tablet
 
     /**
      * Constructor for objects of class GameEngine
@@ -22,8 +28,11 @@ public class GameEngine
     {
         this.aParser        = new Parser();
         this.aRoomList      = new HashMap<String, Room>();
+        this.aRandRooms     = new ArrayList<Room>();
         this.aPlayer1       = new Player();
         this.createRooms();
+        this.aSuspicion     = 0;
+        this.aTabletCharge  = null;
     }
     
     // ******** SETUP *********** 
@@ -44,47 +53,63 @@ public class GameEngine
     {
         // 1st floor
         Room vHall = new Room("in the main hall", "Images/Hall.jpg");
-        Room vDiningRoom = new Room("in the dining room", "Images/blank.jpg");
-        Room vKitchen = new Room("in the kitchen", "Images/blank.jpg");
-        Room vLivingRoom = new Room("in the living room", "Images/blank.jpg");
-        Room vOffice = new Room("in the office", "Images/blank.jpg");
+        Room vDiningRoom = new Room("in the dining room", "Images/DiningRoom.jpg");
+        Room vKitchen = new Room("in the kitchen", "Images/Kitchen.jpg");
+        Room vLivingRoom = new Room("in the living room", "Images/LivingRoom.jpg");
+        Room vOffice = new Room("in the office", "Images/Office.jpg");
         
         // 2nd floor  
-        Room vHall2 = new Room("above the main hall", "Images/blank.jpg");
-        Room vBedroom = new Room("in the bedroom", "Images/blank.jpg");
+        Room vHall2 = new Room("on the second floor", "Images/Hall2.jpg");
+        Room vBedroom = new Room("in the bedroom", "Images/Bedroom.jpg");
+        Room vBathroom = new Room("in the bathroom", "Images/Bathroom.jpg");
         
         // basement 
-        Room vCellar = new Room("in the cellar", "Images/blank.jpg");
+        Room vCellar = new Room("in the cellar", "Images/Cellar.jpg");
+        
+        // special
+        Room vMirror = new Room("mirror", null);
         
         // setting exits
-        vHall.setExit("east", vDiningRoom);
-        vHall.setExit("west", vLivingRoom);
-        vHall.setExit("stairs", vHall2);
+        vHall.setExit("east", vDiningRoom, false);
+        vHall.setExit("west", vLivingRoom, false);
+        vHall.setExit("up", vHall2, false);
         
-        vDiningRoom.setExit("north", vKitchen);
-        vDiningRoom.setExit("west", vHall);
+        vDiningRoom.setExit("north", vKitchen, false);
+        vDiningRoom.setExit("west", vHall, false);
         
-        vKitchen.setExit("south", vDiningRoom);
-        vKitchen.setExit("trapdoor", vCellar); // will be hidden
+        vKitchen.setExit("south", vDiningRoom, false);
+        vKitchen.setExit("down", vCellar, false);
         
-        vLivingRoom.setExit("north", vOffice);
-        vLivingRoom.setExit("east", vHall);
+        vLivingRoom.setExit("north", vOffice, false);
+        vLivingRoom.setExit("east", vHall, false);
         
-        vOffice.setExit("east", vKitchen); // one way exit
-        vOffice.setExit("south", vLivingRoom);
+        vOffice.setExit("east", vKitchen, true); // one way exit
+        vOffice.setExit("south", vLivingRoom, false);
         
-        vHall2.setExit("north", vBedroom);
-        vHall2.setExit("stairs", vHall);
+        vHall2.setExit("north", vBedroom, true); // locked by red key
+        vHall2.setExit("east", vBathroom, false);
+        vHall2.setExit("down", vHall, false);
         
-        vBedroom.setExit("south", vHall2);
+        vBedroom.setExit("south", vHall2, false);
         
-        vCellar.setExit("up", vKitchen);
+        vBathroom.setExit("west", vHall2, false);
+        
+        vCellar.setExit("up", vKitchen, false);
+        
+        // adjusting doors
+        vOffice.getDoor("east").unlockDoor();
+        vOffice.getDoor("east").oneWay();
+        
+        // adjusting lights
+        vCellar.lightsOff();
         
         // setting items
         vHall.addItem("vase", "an ancient vase", 35, 200);
         vHall.addItem("chair", "a wooden chair", 50, 10);
         vDiningRoom.addItem("rock", "a big rock", 200, 0);
-        vOffice.addItem("Spotion", "a strengthening potion", 10, 400);
+        vLivingRoom.addItem("red_key", "a small red key", 5, 15); // opens bedroom
+        vKitchen.addItem("pineapple_pizza", "a pineapple pizza", 15, -500);
+        vCellar.addItem("water_bucket", "a bucket of stagnant water", 40, 20);
         
         // creating room Hashmap
         this.aRoomList.put("Hall", vHall);
@@ -94,7 +119,12 @@ public class GameEngine
         this.aRoomList.put("Office", vOffice);
         this.aRoomList.put("SecondHall", vHall2);
         this.aRoomList.put("Bedroom", vBedroom);
+        this.aRoomList.put("Bathroom", vBathroom);
         this.aRoomList.put("Cellar", vCellar);
+        this.aRoomList.put("Mirror", vMirror);
+        
+        // rooms for randomizer 
+        Collections.addAll(aRandRooms, vHall, vDiningRoom, vKitchen, vLivingRoom, vOffice, vHall2, vBathroom);
         
         // choosing starting room
         this.aPlayer1.setCurrentRoom (vHall);
@@ -128,6 +158,24 @@ public class GameEngine
         this.aGui.println( this.aPlayer1.getCurrentRoom().getLongDescription());
         this.aGui.print("\n");
     }// printLocationInfo()
+    
+    private void lose()
+    {
+        this.aGui.print("\n");
+        this.aGui.println("You were not discreet enough.");
+        this.aGui.println("The police have been alerted to your presence.");
+        this.aGui.println("Game over.");
+        this.aGui.print("\n");
+        this.endGame();
+    }
+    
+    private void endGame()
+    {
+        this.aGui.print("\n");
+        this.aGui.println( "Thank you for playing. Good bye. ");
+        this.aGui.enable( false );
+    }// endGame()
+    
     
     // ****** COMMANDS *********
     
@@ -178,8 +226,10 @@ public class GameEngine
         else if ( vCommandWord.equals( "quit" ) ) {
             if ( vCommand.hasSecondWord() )
                 this.aGui.println( "Quit what?" );
-            else
+            else {   
+                this.aGui.showImage( "Images/ThankYouForPlaying.jpg" );
                 this.endGame();
+            }
         }
         else if ( vCommandWord.equals( "test" ) ) {
             this.test( vCommand );
@@ -189,8 +239,8 @@ public class GameEngine
     private void printHelp()
     {
         this.aGui.print("\n");
-        this.aGui.println("You are lost. You are alone.");
-        this.aGui.println("You wander around at the manor.");
+        this.aGui.println("Find the mansion's treasures.");
+        this.aGui.println("Don't let anybody notice you.");
         this.aGui.print("\n");
         this.aGui.println("Your command words are: ");
         this.aGui.println(aParser.getCommands()); // utilise Parser pour print qqchose dépendant de CommandWords
@@ -208,6 +258,9 @@ public class GameEngine
         }
         
         String vDirection = pDirection.getSecondWord();
+        
+        if ( vDirection.equals("back") ) this.back(); // pour autoriser "go back"
+        
         Room vNextRoom = this.aPlayer1.getCurrentRoom().getExit(vDirection);
         
         // Testing if the second word is a valid direction :
@@ -217,11 +270,48 @@ public class GameEngine
             return;
         }
         
-        this.aPlayer1.goNextRoom( pDirection );
+        if ( this.aPlayer1.getCurrentRoom().hasDoor(vDirection) ) { 
+            if ( this.aPlayer1.getCurrentRoom().directionLocked(vDirection) ) {
+                if (this.aPlayer1.getCurrentRoom().getDescription().equals("on the second floor")) {
+                    if (this.itemInInventory("red_key")) {
+                        this.aGui.println("You unlocked the door with the red key.");
+                        this.aPlayer1.getCurrentRoom().getDoor(vDirection).unlockDoor();
+                        this.goRoom(pDirection);
+                        return;
+                    }
+                }
+                this.aGui.print("\n");
+                this.aGui.println("The door is locked.");
+                this.aGui.print("\n");
+                return;
+            }
+            
+            if ( this.aPlayer1.getCurrentRoom().getDoor(vDirection).isOneWay() ){
+                this.aPlayer1.deletePreviousRooms();
+            }
+        }
+        
+        this.aPlayer1.goNextRoom( vNextRoom );
+        
+        if ( this.aPlayer1.getCurrentRoom().getDescription().equals("mirror") ) {
+            this.aPlayer1.deletePreviousRooms(); // empecher back()
+            this.goRandom();
+        }
+        
         this.printLocationInfo();
         if ( this.aPlayer1.getCurrentRoom().getImageName() != null ) 
             this.aGui.showImage( this.aPlayer1.getCurrentRoom().getImageName() );
+        
+        if ( this.aPlayer1.isOverMaxWeight() )
+            this.suspicion( 10 );
     }// goRoom(.)
+    
+    private void goRandom()
+    {
+        Random r = new Random();
+	int vN = r.nextInt( this.aRandRooms.size() + 1 ); // genere un int aleatoire
+        this.aPlayer1.goNextRoom( this.aRandRooms.get(vN) ); // va a une Room aleatoire en fonction de l'int
+    }// goRandom()
     
     private void back()
     {
@@ -266,6 +356,41 @@ public class GameEngine
             }
             else return;
         }
+        else if ( vAction.equals("tablet") ) {
+            if ( this.itemInInventory("tablet") ) {
+                if ( this.aTabletCharge == null ) {
+                    this.aGui.print("\n");
+                    this.aGui.println("You use the strange stone tablet.");
+                    this.aGui.println("The runes light up but nothing happens...");
+                    this.aGui.print("\n");
+                    this.aTabletCharge = this.aPlayer1.getCurrentRoom();
+                }
+                else {
+                    this.aGui.print("\n");
+                    this.aGui.println("You use the strange stone tablet again.");
+                    this.aGui.println("You are surrounded by bright light.");
+                    this.aGui.println("You open your eyes and find yourself in the room where you first used the tablet.");
+                    this.aGui.print("\n");
+                    this.aPlayer1.goNextRoom( this.aTabletCharge );
+                    this.printLocationInfo();
+                    if ( this.aPlayer1.getCurrentRoom().getImageName() != null ) 
+                        this.aGui.showImage( this.aPlayer1.getCurrentRoom().getImageName() );
+                    this.aTabletCharge = null;
+                }
+            }
+        }
+        else if ( vAction.equals("water_bucket") ) {
+            if ( this.itemInInventory("water_bucket") ) {
+                this.aGui.print("\n");
+                this.aGui.println("You drink the stagnant water bucket.");
+                this.aGui.println("You are feeling unwell...");
+                this.aGui.println("...\n...\n...");
+                this.aGui.println("You have died of dysentery.");
+                this.aGui.showImage( "Images/dysentry.jpg" );
+                this.aGui.print("\n");
+                this.endGame();
+            }
+        }
     }// use(.)
     
     /**
@@ -275,7 +400,7 @@ public class GameEngine
      */
     private boolean itemInInventory(final String pItem)
     {
-        if ( this.aPlayer1.hasItem("Spotion") )
+        if ( this.aPlayer1.hasItem(pItem) )
             return true;
         else {
             this.aGui.print("\n");
@@ -308,6 +433,28 @@ public class GameEngine
             this.aGui.println( this.aPlayer1.getCurrentRoom().getItemsDescription() );
             this.aGui.println("\n");
             return;
+        }
+        else if (vAction.equals("inventory")) {
+            this.showInventory();
+        }
+        else if (vAction.equals("wardrobe")) {
+            if (this.aPlayer1.getCurrentRoom().getDescription().equals("in the bedroom")) {
+                this.aGui.println("There is a strange mirror inside the wardrobe.");
+                this.aGui.println("It's almost as if you could walk inside..." + "\n");
+                this.aRoomList.get("Bedroom").setExit("mirror", aRoomList.get("Mirror"), false);
+                this.printLocationInfo();
+            }
+            else this.aGui.println("What do you want to look at ?" + "\n");
+        }
+        else if (vAction.equals("desk")) {
+            if (this.aPlayer1.getCurrentRoom().getDescription().equals("in the office")) {
+                this.aGui.println("You find a few items in the desk's drawers." + "\n"); 
+                this.aRoomList.get("Office").addItem("tablet", "a strange stone tablet", 50, 150);
+                this.aRoomList.get("Office").addItem("coin_pouch", "a large coin pouch", 20, 200);
+                this.aRoomList.get("Office").addItem("Spotion", "a strengthening potion", 10, 400);
+                this.printLocationInfo();
+            }
+            else this.aGui.println("What do you want to look at ?" + "\n");
         }
         else this.aGui.println("What do you want to look at ?" + "\n");
     }
@@ -394,12 +541,6 @@ public class GameEngine
         }
     }
     
-    private void endGame()
-    {
-        this.aGui.println( "Thank you for playing. Good bye. ");
-        this.aGui.enable( false );
-    }// endGame()
-    
     private void test(final Command pFichier)
     {
         if(pFichier.hasSecondWord() == false) {
@@ -425,5 +566,13 @@ public class GameEngine
             this.aGui.print("\n");
         }
     }// test(.)
+    
+    // ********* MODIFICATIONS **********
+    
+    private void suspicion(final int pSuspicion)
+    {
+        this.aSuspicion = this.aSuspicion + pSuspicion;
+        if (this.aSuspicion >= 100) this.lose();
+    }
 }
 

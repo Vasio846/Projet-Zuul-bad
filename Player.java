@@ -13,6 +13,7 @@ public class Player
     private ItemList              aInventory;
     private Room                  aCurrentRoom;
     private Stack<Room>           aPreviousRooms;
+    private boolean               aStockRooms;  // détermine si les rooms sont Stackees ou pas
 
     /**
      * Constructeur d'objets de classe Player
@@ -24,6 +25,7 @@ public class Player
         this.aInventory     = new ItemList();
         this.aCurrentRoom   = new Room( "void", null );
         this.aPreviousRooms = new Stack<Room>();
+        this.aStockRooms    = true;
     }
     
     public void addMaxWeight( final int pWeight )
@@ -49,13 +51,12 @@ public class Player
     /**
      * @param pDirection direction of next Room 
      */
-    public void goNextRoom(final Command pDirection)
-    {
-        String vDirection = pDirection.getSecondWord();
-        Room vNextRoom = this.aCurrentRoom.getExit(vDirection);
+    public void goNextRoom(final Room pNextRoom)
+    {        
+        if ( this.aStockRooms ) this.aPreviousRooms.push(this.aCurrentRoom);
+        else this.aStockRooms = true;
         
-        this.aPreviousRooms.push(this.aCurrentRoom);
-        this.aCurrentRoom = vNextRoom;
+        this.aCurrentRoom = pNextRoom;
     }
     
     public boolean noPreviousRoom()
@@ -66,6 +67,12 @@ public class Player
     public Room popPreviousRoom()
     {
         return this.aPreviousRooms.pop();
+    }
+    
+    public void deletePreviousRooms()
+    {
+        this.aPreviousRooms.clear();
+        this.aStockRooms = false; // pour ne pas stacker la prochaine room
     }
     
     // ********** INVENTORY **************
