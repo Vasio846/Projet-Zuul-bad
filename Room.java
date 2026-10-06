@@ -9,10 +9,11 @@ import java.util.Set;
  */
 public class Room
 {
-    private String aDescription;
+    private String                aDescription;
     private HashMap<String, Room> exits;
-    private String aImageName;
-    private HashMap<String,Item> aItems;
+    private String                aImageName;
+    private HashMap<String,Item>  aItems;
+    private boolean               aLights;
     
     /**
      * Create a room
@@ -24,9 +25,10 @@ public class Room
     public Room(final String pDescription, final String pImage)
     {
         this.aDescription = pDescription;
-        this.exits = new HashMap<String, Room>();
-        this.aImageName = pImage;
-        this.aItems = new HashMap<String, Item>();
+        this.exits        = new HashMap<String, Room>();
+        this.aImageName   = pImage;
+        this.aItems       = new HashMap<String, Item>();
+        this.aLights      = false;
     }// Room(.)
     
     // ***** DESCRIPTION ********
@@ -65,9 +67,14 @@ public class Room
      * @param pDescription item description
      * @param pWeight int representing the item's weight
      */
-    public void addItem(final String pNom, final String pDescription, final int pWeight)
+    public void addItem(final String pNom, final String pDescription, final int pWeight, final int pValue)
     {
-        this.aItems.put(pNom, new Item(pNom, pDescription, pWeight));
+        this.aItems.put(pNom, new Item(pNom, pDescription, pWeight, pValue));
+    }
+    
+    public void removeItem(final String pNom)
+    {
+        this.aItems.remove(pNom);
     }
     
     /**
@@ -77,6 +84,26 @@ public class Room
     {
         this.exits.put(pDirection, pNeighbor);
     }// setExit(..)
+    
+    public void lightsOn()
+    {
+        this.aLights = true;
+    }
+    
+    public void lightsOff()
+    {
+        this.aLights = false;
+    }
+    
+    /**
+     * sert a allumer eteindre les lumieres
+     */
+    public void switchLights()
+    {
+        if ( this.getLights() ) 
+            this.lightsOff();
+        else this.lightsOn();
+    }
     
     // ******** GET *************
     
@@ -123,5 +150,10 @@ public class Room
     public String getImageName()
     {
         return this.aImageName;
+    }
+    
+    public boolean getLights()
+    {
+        return this.aLights;
     }
 }// Room

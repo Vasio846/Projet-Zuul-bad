@@ -84,8 +84,8 @@ public class GameEngine
         vCellar.setExit("up", vKitchen);
         
         // setting items
-        vHall.addItem("vase", "an ancient vase", 13);
-        vHall.addItem("chair", "a wooden chair", 25);
+        vHall.addItem("vase", "an ancient vase", 13, 200);
+        vHall.addItem("chair", "a wooden chair", 25, 10);
         
         // creating room Hashmap
         this.aRoomList.put("Hall", vHall);
@@ -117,6 +117,14 @@ public class GameEngine
     
         private void printLocationInfo()
     {
+        if( !this.aPlayer1.getCurrentRoom().getLights() ) {
+            this.aGui.print("\n");
+            this.aGui.println("It's too dark.");
+            this.aGui.println("You can't see anything. ");
+            this.aGui.print("\n");
+            return;
+        }
+        
         this.aGui.print("\n");
         this.aGui.println( this.aPlayer1.getCurrentRoom().getLongDescription());
         this.aGui.print("\n");
@@ -146,9 +154,17 @@ public class GameEngine
             this.printHelp();
         else if ( vCommandWord.equals( "go" ) )
             this.goRoom( vCommand );
+        else if ( vCommandWord.equals( "use" ) ) 
+            this.use( vCommand );
         else if ( vCommandWord.equals( "look" ) ) {
             this.look( vCommand );
-        }            
+        }
+        else if ( vCommandWord.equals( "take" ) ) {
+            this.take( vCommand );
+        }
+        else if ( vCommandWord.equals( "drop" ) ) {
+            this.drop( vCommand );
+        }
         else if ( vCommandWord.equals( "eat" ) ) {
             this.aGui.print("\n");
             this.aGui.println("You are not hungry anymore. ");
@@ -223,12 +239,28 @@ public class GameEngine
             this.aGui.showImage( this.aPlayer1.getCurrentRoom().getImageName() );
     }
     
+    private void use(final Command pAction)
+    {
+              if(pAction.hasSecondWord() == false) {
+            this.aGui.print("\n");
+            this.aGui.println("Take what ? ");
+            this.aGui.print("\n");
+            return;
+        }
+        
+        String vAction = pAction.getSecondWord();
+        if ( vAction.equals("switch") || vAction.equals("lights") ) {
+            this.aPlayer1.getCurrentRoom().switchLights();
+        }
+        return;
+    }// use(.)
+    
     /**
      * @param pAction Command object indicating what the character is looking at
      */
     private void look(final Command pAction)
     {   
-        if(pAction.hasSecondWord() == false) {
+              if(pAction.hasSecondWord() == false) {
             this.printLocationInfo();
             return;
         }
@@ -240,6 +272,65 @@ public class GameEngine
             return;
         }
         else this.aGui.println("What do you want to look at ?" + "\n");
+    }
+    
+    /**
+     * @param pCommand Command object indicating the item
+     */
+    private void take(final Command pCommand)
+    {
+        if(pCommand.hasSecondWord() == false) {
+            this.aGui.print("\n");
+            this.aGui.println("Take what ? ");
+            this.aGui.print("\n");
+            return;
+        }
+        
+        String vItemName = pCommand.getSecondWord();
+        
+        try { 
+            Item vItem = this.aPlayer1.getCurrentRoom().getItem(vItemName);
+            this.aPlayer1.pickUpItem(vItem);
+            this.aPlayer1.getCurrentRoom().removeItem(vItemName); //retire l'objet de la Room
+        
+            this.aGui.print("\n");
+            this.aGui.println("You have taken the " + vItemName + ".");
+            this.aGui.print("\n");
+        }
+        catch (Exception vE) {
+            this.aGui.print("\n");
+            this.aGui.println("there is no " + vItemName + " here.");
+            this.aGui.print("\n");
+        }
+    }
+    
+    /**
+     * @param pCommand Command object indicating the item
+     */
+    private void drop(final Command pCommand)
+    {
+        if(pCommand.hasSecondWord() == false) {
+            this.aGui.print("\n");
+            this.aGui.println("Drop what ? ");
+            this.aGui.print("\n");
+            return;
+        }
+        
+        String vItemName = pCommand.getSecondWord();
+        try { 
+            Item vItem = this.aPlayer1.searchInventory(vItemName);
+            this.aPlayer1.getCurrentRoom().addItem(vItemName, vItem.getDescription(), vItem.getWeight(), vItem.getValue() ); 
+            this.aPlayer1.dropItem(vItem);
+            
+            this.aGui.print("\n");
+            this.aGui.println("You have dropped the " + vItemName + ".");
+            this.aGui.print("\n");
+        }
+        catch (Exception vE) {
+            this.aGui.print("\n");
+            this.aGui.println("there is no " + vItemName + " in your inventory.");
+            this.aGui.print("\n");
+        }
     }
     
     private void endGame()

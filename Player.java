@@ -62,15 +62,20 @@ public class Player
         return this.aPreviousRooms.pop();
     }
     
-    // ********** ITEM **************
+    // ********** INVENTORY **************
+    
+    public Item searchInventory( final String pName )
+    {
+        return this.aInventory.get(pName);
+    }
     
     public void pickUpItem( final Item pItem )
     {
-        ;
+        this.aInventory.put(pItem.getName(), pItem);
     }
     
     public void dropItem( final Item pItem )
     {
-        ;
+        this.aInventory.remove(pItem.getName());
     }
 }
