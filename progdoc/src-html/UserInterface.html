@@ -125,7 +125,7 @@
 <span class="source-line-no">112</span><span id="line-112">        this.aImage = new JLabel();</span>
 <span class="source-line-no">113</span><span id="line-113">        </span>
 <span class="source-line-no">114</span><span id="line-114">        // add button </span>
-<span class="source-line-no">115</span><span id="line-115">        this.aButton = new JButton("map");</span>
+<span class="source-line-no">115</span><span id="line-115">        this.aButton = new JButton("look");</span>
 <span class="source-line-no">116</span><span id="line-116">        </span>
 <span class="source-line-no">117</span><span id="line-117">        JPanel vPanel = new JPanel();</span>
 <span class="source-line-no">118</span><span id="line-118">        vPanel.setLayout( new BorderLayout() ); // ==&gt; only five places</span>
@@ -160,7 +160,7 @@
 <span class="source-line-no">147</span><span id="line-147">     */</span>
 <span class="source-line-no">148</span><span id="line-148">    @Override public void actionPerformed( final ActionEvent pE ) </span>
 <span class="source-line-no">149</span><span id="line-149">    {</span>
-<span class="source-line-no">150</span><span id="line-150">        if (pE.getActionCommand() == "map") this.aEngine.interpretCommand( "map");</span>
+<span class="source-line-no">150</span><span id="line-150">        if (pE.getActionCommand() == "look") this.aEngine.interpretCommand( "look");</span>
 <span class="source-line-no">151</span><span id="line-151">        else this.processCommand(); // never suppress this line</span>
 <span class="source-line-no">152</span><span id="line-152">    } // actionPerformed(.)</span>
 <span class="source-line-no">153</span><span id="line-153"></span>

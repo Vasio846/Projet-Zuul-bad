@@ -7,14 +7,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Random;
 
-import Commands.Parser;
-import Commands.Command;
+import pkg_Commands.Parser;
+import pkg_Commands.Command;
 
-import RoomPack.Room;
+import pkg_RoomPack.Room;
 
-import ItemPack.Item;
+import pkg_ItemPack.Item;
 
-import NpcPack.Npc;
+import pkg_NpcPack.Npc;
 
 /**
  * Game engine
@@ -252,6 +252,9 @@ public class GameEngine
             this.printHelp();
         else if ( vCommandWord.equals( "go" ) )
             this.goRoom( vCommand );
+        else if ( vCommandWord.equals( "back" ) ) {
+            this.back();
+        }   
         else if ( vCommandWord.equals( "use" ) ) 
             this.use( vCommand );
         else if ( vCommandWord.equals( "look" ) ) {
@@ -265,10 +268,12 @@ public class GameEngine
         }
         else if ( vCommandWord.equals( "drop" ) ) {
             this.drop( vCommand );
+        }  
+        else if ( vCommandWord.equals( "scream" ) ) {
+            this.aGui.println("you scream loudly.");
+            this.aGui.println("...");
+            this.aGui.println("but nothing happened...");
         }
-        else if ( vCommandWord.equals( "back" ) ) {
-            this.back();
-        }     
         else if ( vCommandWord.equals( "exit" ) ) {
             this.exit();
         }     
@@ -639,6 +644,7 @@ public class GameEngine
             this.aGui.print("\n");
         }
     }
+    
     
     /**
      * permet de lancer un test

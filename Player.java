@@ -1,10 +1,10 @@
 import java.util.HashMap;
 import java.util.Stack;
 
-import RoomPack.Room;
+import pkg_RoomPack.Room;
 
-import ItemPack.Item;
-import ItemPack.ItemList;
+import pkg_ItemPack.Item;
+import pkg_ItemPack.ItemList;
 
 /**
  * Classe gérant le Player
@@ -54,7 +54,7 @@ public class Player
     }
     
     /**
-     * @param pDirection direction of next Room 
+     * @param pNextRoom next Room 
      */
     public void goNextRoom(final Room pNextRoom)
     {        
